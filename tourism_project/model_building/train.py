@@ -113,7 +113,7 @@ preprocessor = ColumnTransformer(
 
 # Define base XGBoost model
 xgb_model = xgb.XGBClassifier(
-    scale_pos_weight=class_weight, 
+    scale_pos_weight=class_weight,
     random_state=42)
 
 # Define hyperparameter grid
