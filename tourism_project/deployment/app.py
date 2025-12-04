@@ -1,6 +1,14 @@
+
+# import streamlit library for IO
 import streamlit as st
+
+# import pandas
 import pandas as pd
+
+# library to download fine from Hugging Face
 from huggingface_hub import hf_hub_download
+
+# library to load model
 import joblib
 
 # Download and load the model
@@ -71,7 +79,7 @@ with col4:
     OwnCar_display = st.radio("Own Car?", ["Yes", "No"])
     Passport_display = st.radio("Passport?", ["Yes", "No"])
 
-# Convert Yes/No → 1/0  
+# Convert Yes/No → 1/0
 OwnCar = 1 if OwnCar_display == "Yes" else 0
 Passport = 1 if Passport_display == "Yes" else 0
 
@@ -152,8 +160,10 @@ input_data = {
 
 import_data_df = pd.DataFrame([input_data])
 
-st.subheader("📦 Input Data Summary")
-st.json(input_data)
+# The following code can be enabled to see the etails of data frame prepared from user input
+# This code was used for debugging and now disabled
+## st.subheader("📦 Input Data Summary")
+## st.json(input_data)
 
 
 # ---------------------------------------------------------
@@ -166,4 +176,4 @@ if st.button("Predict"):
     prediction = model.predict(import_data_df)[0]
     result = "Customer is likely to Take Product" if prediction == 1 else "Customer will not Take the Product"
     st.subheader("Prediction Result:")
-    st.success(f"Prediction as per Model: **{result}**")    
+    st.success(f"Prediction as per Model: **{result}**")

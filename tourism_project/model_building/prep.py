@@ -73,7 +73,7 @@ Following are ordinal
   'OwnCar',
 '''
 
-# Encode categorical columns
+# Encode categorical columns --> One hot encoding
 label_encoder = LabelEncoder()
 df['TypeofContact'] = label_encoder.fit_transform(df['TypeofContact'])
 df['Occupation'] = label_encoder.fit_transform(df['Occupation'])
