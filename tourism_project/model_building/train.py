@@ -86,6 +86,7 @@ y_test = pd.read_csv(ytest_path)
 # print shape of train and test data (input variables)
 print("Shapes: X_train", X_train.shape, "X_test", X_train.shape, "X_test", X_test.shape)
 
+
 # --------------------------------------------------
 # 3. Group t he features based on their nature
 #
@@ -146,7 +147,12 @@ for col in ordinal_features:
 # 4. Compute scale_pos_weight for XGBoost
 #    Note: data set is imbalanced
 # --------------------------------------------------
-# Corrected calculation: neg should be count of target's negative class
+
+# convert both to series
+y_train = y_train.squeeze()
+y_test = y_test.squeeze()
+
+
 neg = (y_train == 0).sum()
 pos = (y_train == 1).sum()
 scale_pos_weight = neg / pos
