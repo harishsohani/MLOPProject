@@ -20,6 +20,9 @@ api = HfApi(token=os.getenv("HF_TOKEN"))
 
 # store file path of data set (csv file) in variable
 DATASET_PATH = "hf://datasets/harishsohani/MLOP-Project-Tourism/tourism.csv"
+RANDOM_STATE = 42
+TEST_SIZE = 0.20   # final test split
+
 
 # read data from csv as data frame
 df = pd.read_csv(DATASET_PATH)
@@ -34,53 +37,68 @@ print("Dataset loaded successfully.")
 # drop columns from data set
 df.drop(columns=['Unnamed: 0', 'CustomerID'], inplace=True)
 
-##############            <<ToDo: Continue from here>>      ####################
 # Data cleaning
-'''
-As per analysis only Gender column needs to be addressed for data cleaning.
-Values in Other columns look fine
 
-?? Do we need to update Martial Status column?
-
-There is no outlier treatment is needed
-'''
+# As per analysis only Gender column needs to be addressed for data cleaning.
+# Values in Other columns look fine
 # replace value 'Fe male' with 'Female' in Gender column. Gender column will have only two values 'Male' and 'Female'
 
 # update column 'Gender' and replace 'Fe male' as 'Female'
 df['Gender'] = df['Gender'].replace ('Fe Male', 'Female')
 
 
+# Information is present in other numeric and category columns
+# The details in numeric column can be devided broadly into following categories
+#   - Ordinal
+#   - Categorical (Some have binary value and others have m ore value)
+#   - Continuous
 
-# data encoding
-'''
-This needs to be understood in details to see if this is the right way of doing it
-We have following category columns to be encoded
-'TypeofContact',
- 'Occupation',
- 'Gender',
- 'ProductPitched',
- 'MaritalStatus',
- 'Designation'
+# Nominal categorical (These will require OneHot)
+categorical_columns = [
+    "TypeofContact",
+    "Occupation",
+    "Gender",
+    "ProductPitched",
+    "MaritalStatus",
+    "Designation"
+]
 
-Besides that we also have following numeric columns which represent fixed number of values. Do we encode them as well?
+# Ordinal numeric (keep numeric, DO NOT scale)
+ordinal_numeric = [
+    "CityTier",
+    "PreferredPropertyStar",
+    "PitchSatisfactionScore"
+]
 
-Following are ordinal
- 'CityTier',  (1 to 3)
- 'PreferredPropertyStar', (3 to 1)
+# binary numeric features (keep numeric, DO NOT Scale)
+binary_numeric_features = ["Passport", "OwnCar"]
 
- Following are logical, indicate presence or absense
-  'Passport',
-  'OwnCar',
-'''
+# Other numeric (keep numeric, DO NOT scale)
+# The reason for not scaling is that we will build model using XGBoost classifier which is tree based. Hence no scaling is needed
+numeric_continuous = [
+    "Age",
+    "DurationOfPitch",
+    "NumberOfPersonVisiting",
+    "NumberOfFollowups",
+    "MonthlyIncome",
+    "NumberOfChildrenVisiting",
+    "NumberOfTrips",
+]
 
-# Encode categorical columns --> One hot encoding
-label_encoder = LabelEncoder()
-df['TypeofContact'] = label_encoder.fit_transform(df['TypeofContact'])
-df['Occupation'] = label_encoder.fit_transform(df['Occupation'])
-df['Gender'] = label_encoder.fit_transform(df['Gender'])
-df['ProductPitched'] = label_encoder.fit_transform(df['ProductPitched'])
-df['MaritalStatus'] = label_encoder.fit_transform(df['MaritalStatus'])
-df['Designation'] = label_encoder.fit_transform(df['Designation'])
+
+# Final numeric list (ordinal + continuous)
+numeric_cols = ordinal_numeric + binary_numeric_features + numeric_continuous
+
+# -------------------------------------------------------
+# 6. Preprocessor (Only OneHot Encoding for nominal)
+# -------------------------------------------------------
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("cat_nominal", OneHotEncoder(handle_unknown="ignore"), categorical_columns),
+        ("num", "passthrough", numeric_cols)   # No scaling
+    ],
+    remainder="drop"
+)
 
 # Define target variable
 target_col = 'ProdTaken'
@@ -91,15 +109,16 @@ y = df[target_col]
 
 # Perform train-test split.
 # Note 80% of data is used for training and 20% for testing
-Xtrain, Xtest, ytrain, ytest = train_test_split(
-    X, y, test_size=0.2, random_state=42
+# Perform train-test split
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=TEST_SIZE, stratify=y, random_state=RANDOM_STATE
 )
 
 # save tran and test data set as scv files
-Xtrain.to_csv("Xtrain.csv",index=False)
-Xtest.to_csv("Xtest.csv",index=False)
-ytrain.to_csv("ytrain.csv",index=False)
-ytest.to_csv("ytest.csv",index=False)
+X_train.to_csv("Xtrain.csv",index=False)
+X_test.to_csv("Xtest.csv",index=False)
+y_train.to_csv("ytrain.csv",index=False)
+y_test.to_csv("ytest.csv",index=False)
 
 # define files list for uploading
 files = ["Xtrain.csv","Xtest.csv","ytrain.csv","ytest.csv"]

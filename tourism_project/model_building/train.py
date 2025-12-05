@@ -1,42 +1,74 @@
 
-# for creating a folder
+# import os library
 import os
 
 # for data manipulation
+import numpy as np
 import pandas as pd
+from pprint import pprint
 
 import sklearn
 
 # libraries for converting text data in to numerical representation
 from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
+# libraries for encoding, used during pre-processing
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder, StandardScaler, LabelEncoder
+
+# libraries for column transformer
 from sklearn.compose import ColumnTransformer
 from sklearn.compose import make_column_transformer
 
+# for data preprocessing and pipeline creation
 from sklearn.pipeline import make_pipeline
 from sklearn.pipeline import Pipeline
 
-
 # for model training, tuning, and evaluation
+from sklearn.model_selection import train_test_split, StratifiedKFold, RandomizedSearchCV
+
 import xgboost as xgb
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import accuracy_score, classification_report, recall_score
+
+# Libraries for measuring scores
+from sklearn.metrics import (
+    classification_report,
+    precision_recall_curve,
+    roc_auc_score,
+    confusion_matrix,
+    accuracy_score
+)
 
 # for model serialization
 import joblib
-
-# for hugging face space authentication to upload files
-from huggingface_hub import login, HfApi, create_repo
-from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
 
 # import mlflow for expermemintation and logging
 import mlflow
 import mlflow.sklearn
 
-mlflow.set_tracking_uri("http://localhost:5000")
-mlflow.set_experiment("MLOps_Tourism_experiment")
 
+# for hugging face space authentication to upload files
+from huggingface_hub import login, HfApi, create_repo
+from huggingface_hub.utils import RepositoryNotFoundError, HfHubHTTPError
+
+
+# -------------------------
+# 1. Configure parameters
+# -------------------------
+DATA_PATH = "tourism_project/data/tourism.csv"
+RANDOM_STATE = 42
+TEST_SIZE = 0.20   # final test split
+MLFLOW_EXPERIMENT = "MLOps_Tourism_experiment"
+
+
+# initialize mlflow - set tracking uri and experiment name
+mlflow.set_tracking_uri("http://localhost:5000")
+mlflow.set_experiment(MLFLOW_EXPERIMENT)
+
+
+# --------------------------------------------------
+# 2. Load Train and test data from Hugging Face Space
+# --------------------------------------------------
+
+# Initialize Hiugging Face API
 api = HfApi()
 
 # update path variables with data paths for train and test data sets
@@ -45,141 +77,200 @@ Xtest_path = "hf://datasets/harishsohani/MLOP-Project-Tourism/Xtest.csv"
 ytrain_path = "hf://datasets/harishsohani/MLOP-Project-Tourism/ytrain.csv"
 ytest_path = "hf://datasets/harishsohani/MLOP-Project-Tourism/ytest.csv"
 
-Xtrain = pd.read_csv(Xtrain_path)
-Xtest = pd.read_csv(Xtest_path)
-ytrain = pd.read_csv(ytrain_path)
-ytest = pd.read_csv(ytest_path)
+# load train and test data
+X_train = pd.read_csv(Xtrain_path)
+X_test = pd.read_csv(Xtest_path)
+y_train = pd.read_csv(ytrain_path)
+y_test = pd.read_csv(ytest_path)
 
-''' Original Code
+# print shape of train and test data (input variables)
+print("Shapes: X_train", X_train.shape, "X_test", X_train.shape, "X_test", X_test.shape)
 
-# One-hot encode category variables and scale numeric features
+# --------------------------------------------------
+# 3. Group t he features based on their nature
+#
+#    Here we separate the variavables into different
+#    groups for preprocessing
+#
+# --------------------------------------------------
 
-# numeric features
-numeric_features = [
-    'CityTier',
-    'PreferredPropertyStar',
-    'Passport',
-    'OwnCar'
+# define list with categorical variables
+category_features  = [
+    "TypeofContact",
+    "Occupation",
+    "Gender",
+    "ProductPitched",
+    "MaritalStatus",
+    "Designation"
 ]
 
-
-# category features
-categorical_features = [
-'TypeofContact',
- 'Occupation',
- 'Gender',
- 'ProductPitched',
- 'MaritalStatus',
- 'Designation']
-
-
-
-# Set the class weight to handle class imbalance
-class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
-class_weight
-
-# Define the preprocessing steps
-preprocessor = make_column_transformer(
-    (StandardScaler(), numeric_features),
-    (OneHotEncoder(handle_unknown='ignore'), categorical_features)
-)
-'''
-
-categorical_features = [
-    'TypeofContact', 'Occupation', 'Gender', 'ProductPitched',
-    'MaritalStatus', 'Designation',
-    'CityTier', 'PreferredPropertyStar', 'PitchSatisfactionScore'
+# define Ordinal features
+ordinal_features = [
+    "CityTier",                 # Defines Tier with values ranging from 1 to 3, where 1 > 2 > 3
+    "PreferredPropertyStar",    # Defines Preferred Property Rating  with values ranging from 5 to 3, where 5 > 4 > 3
+    "PitchSatisfactionScore"    # Defines Sales Pitch satisfaction score with ranging from 5 to 1, where 5 > 4 > 3 > 2 > 1
 ]
 
-numeric_scaled = ['MonthlyIncome']  # only scale this
-binary_features = ['Passport', 'OwnCar']
+# umeric variables with binary values (0 and 1)
+binary_numeric = ["Passport", "OwnCar"]
 
-numeric_continuous = [
-    'Age', 'DurationOfPitch', 'NumberOfTrips', 'NumberOfFollowups',
-    'NumberOfChildrenVisiting', 'NumberOfPersonVisiting'
+# numberic variables which are continuous in nature
+continuous_numeric  = [
+    "Age",
+    "DurationOfPitch",
+    "NumberOfPersonVisiting",
+    "NumberOfFollowups",
+    "MonthlyIncome",
+    "NumberOfChildrenVisiting",
+    "NumberOfTrips",
 ]
 
-# Set the class weight to handle class imbalance
-class_weight = ytrain.value_counts()[0] / ytrain.value_counts()[1]
-class_weight
+# following list combines all numeric features into single
+numeric_cols = ordinal_features + binary_numeric + continuous_numeric
 
+# Define target variable
+target_col = 'ProdTaken'
+
+# Ensure ordinals are proper dtype (int)
+for col in ordinal_features:
+    # If categorical strings exist, try to coerce numeric
+    tourism_df[col] = pd.to_numeric(tourism_df[col], errors="coerce").astype("Int64")
+
+
+
+# --------------------------------------------------
+# 4. Compute scale_pos_weight for XGBoost
+#    Note: data set is imbalanced
+# --------------------------------------------------
+# Corrected calculation: neg should be count of target's negative class
+neg = (y_train == 0).sum()
+pos = (y_train == 1).sum()
+scale_pos_weight = neg / pos
+print("scale_pos_weight:", scale_pos_weight)
+
+
+
+# -------------------------
+# 5. Build preprocessing
+# -------------------------
+
+# Explicit categories for OrdinalEncoder (must match the data values and order)
+ordinal_categories = [
+    [1, 2, 3],             # CityTier
+    [3, 4, 5],             # PreferredPropertyStar (if only 3..5)
+    [1, 2, 3, 4, 5]        # PitchSatisfactionScore
+]
+
+#define ordinal encoder
+ordinal_encoder = OrdinalEncoder(categories=ordinal_categories, dtype=int)
+
+#define category encoder
+category_encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
+
+# define preprocessor with columns transformer
 preprocessor = ColumnTransformer(
     transformers=[
-        ('num_scaled', StandardScaler(), numeric_scaled),
-        ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+        ("ordinal", ordinal_encoder, ordinal_features),
+        ("categorical", category_encoder, category_features),
+        ("binary", "passthrough", binary_numeric),
+        ("continuous", "passthrough", continuous_numeric)
     ],
-    remainder='passthrough'   # passes binary + continuous numeric features
+    remainder="drop",
+    verbose_feature_names_out=False  # gives nicer feature names from transformers
 )
 
-# Define base XGBoost model
-xgb_model = xgb.XGBClassifier(
-    scale_pos_weight=class_weight,
-    random_state=42)
 
-# Define hyperparameter grid
+
+# ----------------------------
+# 6. Build model and pipeline
+# ----------------------------
+xgb_model  = xgb.XGBClassifier(
+    use_label_encoder=False,
+    eval_metric="logloss",   # recommended for newer xgboost versions
+    scale_pos_weight=scale_pos_weight, # This will now be a single float
+    random_state=RANDOM_STATE,
+    tree_method="hist",      # faster for larger data; keep XGBoost deterministic-ish
+)
+
+pipeline = make_pipeline(preprocessor, xgb_model)
+
+
+
+# ----------------------------------------
+# 7. Define RandomizedSearchCV parameters
+# ----------------------------------------
 param_grid = {
-    'xgbclassifier__n_estimators': [50, 75, 100],
-    'xgbclassifier__max_depth': [2, 3, 4],
-    'xgbclassifier__colsample_bytree': [0.4, 0.5, 0.6],
-    'xgbclassifier__colsample_bylevel': [0.4, 0.5, 0.6],
-    'xgbclassifier__learning_rate': [0.01, 0.05, 0.1],
-    'xgbclassifier__reg_lambda': [0.4, 0.5, 0.6],
+    "xgbclassifier__n_estimators": [50, 100, 150],
+    "xgbclassifier__learning_rate": [0.01, 0.05, 0.1],
+    "xgbclassifier__max_depth": [3, 4, 5],
+    "xgbclassifier__min_child_weight": [1, 3, 5],
+    "xgbclassifier__subsample": [0.7, 0.85, 1.0],
+    "xgbclassifier__colsample_bytree": [0.6, 0.8, 1.0],
+    "xgbclassifier__gamma": [0, 1],
+    "xgbclassifier__reg_lambda": [0.5, 1.0, 2.0]
 }
 
-# Model pipeline
-model_pipeline = make_pipeline(preprocessor, xgb_model)
+# CV strategy
+cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=RANDOM_STATE)
 
-# Start MLflow run
-with mlflow.start_run():
-    # Hyperparameter tuning
-    grid_search = GridSearchCV(model_pipeline, param_grid, cv=5, n_jobs=-1)
-    grid_search.fit(Xtrain, ytrain)
 
-    # Log all parameter combinations and their mean test scores
-    results = grid_search.cv_results_
-    for i in range(len(results['params'])):
-        param_set = results['params'][i]
-        mean_score = results['mean_test_score'][i]
-        std_score = results['std_test_score'][i]
+# --------------------------------------
+# 8. Run RandomizedSearchCV with MLFlow
+# --------------------------------------
 
-        # Log each combination as a separate MLflow run
-        with mlflow.start_run(nested=True):
-            mlflow.log_params(param_set)
-            mlflow.log_metric("mean_test_score", mean_score)
-            mlflow.log_metric("std_test_score", std_score)
+with mlflow.start_run(run_name="random_search_xgb_pipeline"):
+    random_search = RandomizedSearchCV(
+        estimator=pipeline,
+        param_distributions=param_grid,
+        n_iter=50,  # fewer iterations for faster runtime
+        scoring="roc_auc",
+        cv=cv,
+        n_jobs=-1,
+        verbose=2,
+        random_state=RANDOM_STATE,
+        return_train_score=True
+    )
 
-    # Log best parameters separately in main run
-    mlflow.log_params(grid_search.best_params_)
+    random_search.fit(X_train, y_train)
 
-    # Store and evaluate the best model
-    best_model = grid_search.best_estimator_
+    best_params = random_search.best_params_
+    mlflow.log_params(best_params)
+    pprint(best_params)
 
-    classification_threshold = 0.45
+    # -------------------------
+    # Evaluate best model
+    # -------------------------
+    best_pipeline = random_search.best_estimator_
+    THRESHOLD = 0.45
 
-    y_pred_train_proba = best_model.predict_proba(Xtrain)[:, 1]
-    y_pred_train = (y_pred_train_proba >= classification_threshold).astype(int)
+    def eval_and_log(X_, y_, dataset_name, threshold=THRESHOLD):
+        y_proba = best_pipeline.predict_proba(X_)[:,1]
+        y_pred = (y_proba >= threshold).astype(int)
+        acc = accuracy_score(y_, y_pred)
+        auc = roc_auc_score(y_, y_proba)
+        report = classification_report(y_, y_pred, output_dict=True)
+        cm = confusion_matrix(y_, y_pred)
 
-    y_pred_test_proba = best_model.predict_proba(Xtest)[:, 1]
-    y_pred_test = (y_pred_test_proba >= classification_threshold).astype(int)
+        mlflow.log_metric(f"{dataset_name}_accuracy", float(acc))
+        mlflow.log_metric(f"{dataset_name}_roc_auc", float(auc))
+        mlflow.log_metric(f"{dataset_name}_threshold", float(threshold))
 
-    train_report = classification_report(ytrain, y_pred_train, output_dict=True)
-    test_report = classification_report(ytest, y_pred_test, output_dict=True)
+        if "1" in report:
+            mlflow.log_metric(f"{dataset_name}_precision_pos", float(report["1"]["precision"]))
+            mlflow.log_metric(f"{dataset_name}_recall_pos", float(report["1"]["recall"]))
+            mlflow.log_metric(f"{dataset_name}_f1_pos", float(report["1"]["f1-score"]))
 
-    # Log the metrics for the best model
-    mlflow.log_metrics({
-        "train_accuracy": train_report['accuracy'],
-        "train_precision": train_report['1']['precision'],
-        "train_recall": train_report['1']['recall'],
-        "train_f1-score": train_report['1']['f1-score'],
-        "test_accuracy": test_report['accuracy'],
-        "test_precision": test_report['1']['precision'],
-        "test_recall": test_report['1']['recall'],
-        "test_f1-score": test_report['1']['f1-score']
-    })
+        print(f"\n{dataset_name} - acc: {acc:.4f} | roc_auc: {auc:.4f} | threshold={threshold}")
+        print("confusion_matrix:\n", cm)
+        print("classification_report:\n", classification_report(y_, y_pred))
+        return {"acc": acc, "auc": auc, "cm": cm, "report": report}
+
+    train_metrics = eval_and_log(X_train, y_train, "train")
+    test_metrics = eval_and_log(X_test, y_test, "test")
 
     # Save the model locally
     model_path = "best_tourism_model.joblib"
-    joblib.dump(best_model, model_path)
+    joblib.dump(best_pipeline, model_path)
 
     # Log the model artifact
     mlflow.log_artifact(model_path, artifact_path="model")
@@ -198,7 +289,7 @@ with mlflow.start_run():
         create_repo(repo_id=repo_id, repo_type=repo_type, private=False)
         print(f"Space '{repo_id}' created.")
 
-    # create_repo("churn-model", repo_type="model", private=False)
+    # Upload model
     api.upload_file(
         path_or_fileobj="best_tourism_model.joblib",
         path_in_repo="best_tourism_model.joblib",
