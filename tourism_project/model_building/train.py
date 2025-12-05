@@ -132,10 +132,14 @@ numeric_cols = ordinal_features + binary_numeric + continuous_numeric
 target_col = 'ProdTaken'
 
 # Ensure ordinals are proper dtype (int)
+# this needs to be done on both train and test data
 for col in ordinal_features:
     # If categorical strings exist, try to coerce numeric
-    tourism_df[col] = pd.to_numeric(tourism_df[col], errors="coerce").astype("Int64")
+    X_train[col] = pd.to_numeric(X_train[col], errors="coerce").astype("Int64")
 
+for col in ordinal_features:
+    # If categorical strings exist, try to coerce numeric
+    X_test[col] = pd.to_numeric(X_test[col], errors="coerce").astype("Int64")
 
 
 # --------------------------------------------------
