@@ -47,58 +47,9 @@ df.drop(columns=['Unnamed: 0', 'CustomerID'], inplace=True)
 df['Gender'] = df['Gender'].replace ('Fe Male', 'Female')
 
 
-# Information is present in other numeric and category columns
-# The details in numeric column can be devided broadly into following categories
-#   - Ordinal
-#   - Categorical (Some have binary value and others have m ore value)
-#   - Continuous
+# No other processing is required.
+# Preprocessor wil be used duirng model building based on nature of input variables
 
-# Nominal categorical (These will require OneHot)
-categorical_columns = [
-    "TypeofContact",
-    "Occupation",
-    "Gender",
-    "ProductPitched",
-    "MaritalStatus",
-    "Designation"
-]
-
-# Ordinal numeric (keep numeric, DO NOT scale)
-ordinal_numeric = [
-    "CityTier",
-    "PreferredPropertyStar",
-    "PitchSatisfactionScore"
-]
-
-# binary numeric features (keep numeric, DO NOT Scale)
-binary_numeric_features = ["Passport", "OwnCar"]
-
-# Other numeric (keep numeric, DO NOT scale)
-# The reason for not scaling is that we will build model using XGBoost classifier which is tree based. Hence no scaling is needed
-numeric_continuous = [
-    "Age",
-    "DurationOfPitch",
-    "NumberOfPersonVisiting",
-    "NumberOfFollowups",
-    "MonthlyIncome",
-    "NumberOfChildrenVisiting",
-    "NumberOfTrips",
-]
-
-
-# Final numeric list (ordinal + continuous)
-numeric_cols = ordinal_numeric + binary_numeric_features + numeric_continuous
-
-# -------------------------------------------------------
-# 6. Preprocessor (Only OneHot Encoding for nominal)
-# -------------------------------------------------------
-preprocessor = ColumnTransformer(
-    transformers=[
-        ("cat_nominal", OneHotEncoder(handle_unknown="ignore"), categorical_columns),
-        ("num", "passthrough", numeric_cols)   # No scaling
-    ],
-    remainder="drop"
-)
 
 # Define target variable
 target_col = 'ProdTaken'
