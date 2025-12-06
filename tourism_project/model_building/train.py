@@ -69,7 +69,7 @@ mlflow.set_experiment(MLFLOW_EXPERIMENT)
 # --------------------------------------------------
 
 # Initialize Hiugging Face API
-api = HfApi()
+api = HfApi(token=os.getenv("HF_TOKEN"))
 
 # update path variables with data paths for train and test data sets
 Xtrain_path = "hf://datasets/harishsohani/MLOP-Project-Tourism/Xtrain.csv"
@@ -84,7 +84,10 @@ y_train = pd.read_csv(ytrain_path)
 y_test = pd.read_csv(ytest_path)
 
 # print shape of train and test data (input variables)
-print("Shapes: X_train", X_train.shape, "X_test", X_train.shape, "X_test", X_test.shape)
+print("\nShapes: X_train", X_train.shape, "X_test", X_train.shape)
+
+# print shape of train and test data (target variable)
+print("\nShapes: y_train", y_train.shape, "y_test", y_test.shape)
 
 
 # --------------------------------------------------
@@ -156,7 +159,7 @@ y_test = y_test.squeeze()
 neg = (y_train == 0).sum()
 pos = (y_train == 1).sum()
 scale_pos_weight = neg / pos
-print("scale_pos_weight:", scale_pos_weight)
+print("Class weight:", scale_pos_weight)
 
 
 
@@ -244,7 +247,12 @@ with mlflow.start_run(run_name="random_search_xgb_pipeline"):
     random_search.fit(X_train, y_train)
 
     best_params = random_search.best_params_
+
+    # log best parameters
     mlflow.log_params(best_params)
+
+    # print best parameters
+    print("\nBest parameters found during training:")
     pprint(best_params)
 
     # -------------------------
