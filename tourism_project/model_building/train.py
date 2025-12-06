@@ -198,7 +198,7 @@ preprocessor = ColumnTransformer(
 # 6. Build model and pipeline
 # ----------------------------
 xgb_model  = xgb.XGBClassifier(
-    use_label_encoder=False,
+    #use_label_encoder=False,
     eval_metric="logloss",   # recommended for newer xgboost versions
     scale_pos_weight=scale_pos_weight, # This will now be a single float
     random_state=RANDOM_STATE,

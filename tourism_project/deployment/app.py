@@ -15,8 +15,30 @@ import joblib
 model_path = hf_hub_download(repo_id="harishsohani/MLOP-Project-Tourism", filename="best_tourism_model.joblib")
 model = joblib.load(model_path)
 
+# Custom CSS
+st.markdown("""
+<style>
+/* Change size of title */
+h1 {
+    font-size: 40px !important;
+    color: #00b4d8;
+}
+
+/* Change size of header */
+h2 {
+    font-size: 28px !important;
+    color: #0077b6;
+}
+
+/* Change size of subheader */
+h3 {
+    font-size: 22px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Streamlit UI for Machine Failure Prediction
-st.title("Tourism App - Input form for Prediction")
+st.title("Tourism App - Input form")
 st.write("""
 This application predicts the likelihood of whether a customer would take the product based on following set of parameters.
 Please provide the following details.
@@ -57,7 +79,7 @@ st.header("1️⃣ Personal Information")
 col1, col2 = st.columns(2)
 
 with col1:
-    Age = st.number_input("Age", min_value=1, max_value=100, value=30)
+    Age = st.number_input("Age", min_value=1, max_value=150, value=30)
     Gender = st.selectbox("Gender", Gender_vals)
 
 with col2:
