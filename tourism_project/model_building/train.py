@@ -88,7 +88,7 @@ print("Shapes: X_train", X_train.shape, "X_test", X_train.shape, "X_test", X_tes
 
 
 # --------------------------------------------------
-# 3. Group t he features based on their nature
+# 3. Group the features based on their nature
 #
 #    Here we separate the variavables into different
 #    groups for preprocessing
