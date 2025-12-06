@@ -66,7 +66,7 @@ with st.expander("👤 1. Personal and Professional Information", expanded=True)
     #st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns(3)
+    col1, col2, col3 = st.columns(3)
     with col1:
         Age = st.number_input("Age", 18, 90, 30)
         Gender = st.selectbox("Gender", ["Male", "Female"])
@@ -120,7 +120,7 @@ with st.expander("🗣️ 3. Interaction Details"):
     #st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         TypeofContact = st.selectbox("Type of Contact", ["Company Invited", "Self Inquiry"])
