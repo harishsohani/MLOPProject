@@ -15,6 +15,29 @@ import joblib
 model_path = hf_hub_download(repo_id="harishsohani/MLOP-Project-Tourism", filename="best_tourism_model.joblib")
 model = joblib.load(model_path)
 
+# Define predefines set values for each input applicable
+TypeofContact_vals = ['Self Enquiry', 'Company Invited']
+
+Occupation_vals = ['Salaried', 'Free Lancer', 'Small Business', 'Large Business']
+
+Gender_vals = ['Female', 'Male']   
+
+ProductPitched_vals = ['Deluxe', 'Basic', 'Standard', 'Super Deluxe', 'King']
+
+MaritalStatus_vals = ['Single', 'Divorced', 'Married', 'Unmarried']
+
+Designation_vals = ['Manager', 'Executive', 'Senior Manager', 'AVP', 'VP']
+
+CityType = [ "Tier 1", "Tier 2", "Tier3"]
+
+CityTier_vals = [1, 2, 3]
+
+PreferredPropertyStar_vals = [3.0, 4.0, 5.0]
+
+NumberOfTrips_vals = [1, 2, 7, 5, 6, 3, 4, 19, 21, 8, 20, 22]
+
+PitchSatisfactionScore_vals = [1, 2, 3, 4, 5]
+
 # ---------------------------------------------------------
 # UI OPTIMIZATION (CSS + Layout Tweaks)
 # ---------------------------------------------------------
@@ -69,18 +92,18 @@ with st.expander("👤 1. Personal and Professional Information", expanded=True)
     col1, col2, col3 = st.columns(3)
     with col1:
         Age = st.number_input("Age", 18, 90, 30)
-        Gender = st.selectbox("Gender", ["Male", "Female"])
-        MaritalStatus = st.selectbox("Marital Status", ["Single", "Married", "Divorced"])
+        Gender = st.selectbox("Gender", Gender_vals)
+        MaritalStatus = st.selectbox("Marital Status", MaritalStatus_vals)
 
     with col2:
-        CityTier_label = st.selectbox("City Tier", ["Tier 1", "Tier 2", "Tier 3"])
+        CityTier_label = st.selectbox("City Tier", CityType)
         #OwnCar = st.selectbox("Owns a Car?", [0, 1])
         #Passport = st.selectbox("Has Passport?", [0, 1])
         OwnCar_display = st.radio("Own Car?", ["Yes", "No"])
         Passport_display = st.radio("Has Passport?", ["Yes", "No"])
 
     with col3:
-        Occupation = st.selectbox("Occupation", ["Salaried", "Self Employed", "Entrepreneur"])
+        Occupation = st.selectbox("Occupation", Occupation_vals)
         Designation = st.selectbox("Designation", Designation_vals)        
         MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 50000)
 
@@ -124,13 +147,12 @@ with st.expander("🗣️ 3. Interaction Details"):
 
     with col1:
         TypeofContact = st.selectbox("Type of Contact", ["Company Invited", "Self Inquiry"])
-        ProductPitched = st.selectbox("Product Pitched", 
-                                      ["Basic", "Standard", "Deluxe", "Luxury"])
+        ProductPitched = st.selectbox("Product Pitched", ProductPitched_vals)
 
 
     with col2:
         DurationOfPitch = st.number_input("Pitch Duration (minutes)", 0, 200, 10)
-        NumberOfFollowups = st.number_input("Number of Follow-ups", 0, 20, 1)
+        NumberOfFollowups = st.number_input("Number of Follow-ups", 0, 50, 1)
 
     with col3:
         PitchSatisfactionScore = st.selectbox("Pitch Satisfaction Score", [1, 2, 3, 4, 5])
