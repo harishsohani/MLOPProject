@@ -62,32 +62,44 @@ st.markdown("""
 # ---------------------------------------------------------
 # PERSONAL INFORMATION
 # ---------------------------------------------------------
-with st.expander("👤 1. Personal Information", expanded=True):
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+with st.expander("👤 1. Personal and Professional Information", expanded=True):
+    #st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(3)
     with col1:
         Age = st.number_input("Age", 18, 90, 30)
         Gender = st.selectbox("Gender", ["Male", "Female"])
-        CityTier_label = st.selectbox("City Tier", ["Tier 1", "Tier 2", "Tier 3"])
-        Passport = st.selectbox("Has Passport?", [0, 1])
+        MaritalStatus = st.selectbox("Marital Status", ["Single", "Married", "Divorced"])
 
     with col2:
-        MaritalStatus = st.selectbox("Marital Status", ["Single", "Married", "Divorced"])
-        MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 50000)
+        CityTier_label = st.selectbox("City Tier", ["Tier 1", "Tier 2", "Tier 3"])
+        #OwnCar = st.selectbox("Owns a Car?", [0, 1])
+        #Passport = st.selectbox("Has Passport?", [0, 1])
+        OwnCar_display = st.radio("Own Car?", ["Yes", "No"])
+        Passport_display = st.radio("Has Passport?", ["Yes", "No"])
+
+    with col3:
         Occupation = st.selectbox("Occupation", ["Salaried", "Self Employed", "Entrepreneur"])
-        OwnCar = st.selectbox("Owns a Car?", [0, 1])
+        Designation = st.selectbox("Designation", Designation_vals)        
+        MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 50000)
 
     st.markdown('</div>', unsafe_allow_html=True)
 
+#convert City Tier to numeric
 CityTier = {"Tier 1": 1, "Tier 2": 2, "Tier 3": 3}[CityTier_label]
+
+# Convert Yes/No → 1/0
+OwnCar = 1 if OwnCar_display == "Yes" else 0
+Passport = 1 if Passport_display == "Yes" else 0
 
 
 # ---------------------------------------------------------
 # TRAVEL INFORMATION
 # ---------------------------------------------------------
 with st.expander("✈️ 2. Travel Information"):
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+    #st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
     with col1:
@@ -105,49 +117,57 @@ with st.expander("✈️ 2. Travel Information"):
 # INTERACTION INFORMATION
 # ---------------------------------------------------------
 with st.expander("🗣️ 3. Interaction Details"):
-    st.markdown('<div class="card">', unsafe_allow_html=True)
+    #st.markdown('<div class="card">', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
     with col1:
-        DurationOfPitch = st.number_input("Pitch Duration (minutes)", 0, 200, 10)
-        NumberOfFollowups = st.number_input("Number of Follow-ups", 0, 20, 1)
-
-    with col2:
-        PitchSatisfactionScore = st.selectbox("Pitch Satisfaction Score", [1, 2, 3, 4, 5])
+        TypeofContact = st.selectbox("Type of Contact", ["Company Invited", "Self Inquiry"])
         ProductPitched = st.selectbox("Product Pitched", 
                                       ["Basic", "Standard", "Deluxe", "Luxury"])
 
-    TypeofContact = st.selectbox("Type of Contact", ["Company Invited", "Self Inquiry"])
 
+    with col2:
+        DurationOfPitch = st.number_input("Pitch Duration (minutes)", 0, 200, 10)
+        NumberOfFollowups = st.number_input("Number of Follow-ups", 0, 20, 1)
+
+    with col3:
+        PitchSatisfactionScore = st.selectbox("Pitch Satisfaction Score", [1, 2, 3, 4, 5])
+    
     st.markdown('</div>', unsafe_allow_html=True)
+
+# --------------------------
+# Prepare input data frame
+# ------------------------
+input_data = {
+    "Age": Age,
+    "TypeofContact": TypeofContact,
+    "CityTier": CityTier,
+    "DurationOfPitch": DurationOfPitch,
+    "Occupation": Occupation,
+    "Gender": Gender,
+    "NumberOfPersonVisiting": NumberOfPersonVisiting,
+    "NumberOfFollowups": NumberOfFollowups,
+    "ProductPitched": ProductPitched,
+    "PreferredPropertyStar": PreferredPropertyStar,
+    "MaritalStatus": MaritalStatus,
+    "NumberOfTrips": NumberOfTrips,
+    "Passport": Passport,
+    "PitchSatisfactionScore": PitchSatisfactionScore,
+    "OwnCar": OwnCar,
+    "NumberOfChildrenVisiting": NumberOfChildrenVisiting,
+    "Designation": Designation,
+    "MonthlyIncome": MonthlyIncome
+}
+
+input_df = pd.DataFrame([input_data])
 
 
 # ---------------------------------------------------------
 # Predict Button
 # ---------------------------------------------------------
 if st.button("🔮 Predict"):
-    input_data = {
-        "Age": Age,
-        "Gender": Gender,
-        "CityTier": CityTier,
-        "MaritalStatus": MaritalStatus,
-        "MonthlyIncome": MonthlyIncome,
-        "Occupation": Occupation,
-        "NumberOfTrips": NumberOfTrips,
-        "NumberOfAdultsVisiting": NumberOfAdultsVisiting,
-        "NumberOfChildrenVisiting": NumberOfChildrenVisiting,
-        "PitchDuration": DurationOfPitch,
-        "NumberOfFollowups": NumberOfFollowups,
-        "PreferredProperty": PreferredProperty,
-        "PitchSatisfaction": PitchSatisfaction,
-        "ProductPitched": ProductPitched,
-        "TourType": TourType,
-        "Passport": Passport
-    }
-
-    input_df = pd.DataFrame([input_data])
-
     # ---------------------------------------------------------
     # Prediction Button
     # ---------------------------------------------------------
