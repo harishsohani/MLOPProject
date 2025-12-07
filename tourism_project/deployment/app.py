@@ -20,7 +20,7 @@ TypeofContact_vals = ['Self Enquiry', 'Company Invited']
 
 Occupation_vals = ['Salaried', 'Free Lancer', 'Small Business', 'Large Business']
 
-Gender_vals = ['Female', 'Male']   
+Gender_vals = ['Female', 'Male']
 
 ProductPitched_vals = ['Deluxe', 'Basic', 'Standard', 'Super Deluxe', 'King']
 
@@ -82,6 +82,14 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# Streamlit UI for Machine Failure Prediction
+st.title("Tourism App - Input form for Predection")
+st.write("""
+This application predicts the likelihood of whether a customer would take the product based on following set of parameters.
+Please provide the following details.
+""")
+
+
 # ---------------------------------------------------------
 # PERSONAL INFORMATION
 # ---------------------------------------------------------
@@ -104,7 +112,7 @@ with st.expander("👤 1. Personal and Professional Information", expanded=True)
 
     with col3:
         Occupation = st.selectbox("Occupation", Occupation_vals)
-        Designation = st.selectbox("Designation", Designation_vals)        
+        Designation = st.selectbox("Designation", Designation_vals)
         MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 50000)
 
     st.markdown('</div>', unsafe_allow_html=True)
@@ -156,7 +164,7 @@ with st.expander("🗣️ 3. Interaction Details"):
 
     with col3:
         PitchSatisfactionScore = st.selectbox("Pitch Satisfaction Score", [1, 2, 3, 4, 5])
-    
+
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --------------------------
@@ -189,25 +197,21 @@ input_df = pd.DataFrame([input_data])
 # ---------------------------------------------------------
 # Predict Button
 # ---------------------------------------------------------
-if st.button("🔮 Predict"):
-    # ---------------------------------------------------------
-    # Prediction Button
-    # ---------------------------------------------------------
-    if st.button("Predict"):
-        prediction = model.predict(input_df)[0]
-        result = (
-            "Customer is likely to purchase the product"
-            if prediction == 1 else
-            "Customer is unlikely to purchase the product"
-        )
-        
-        st.subheader("Prediction Result")
-        st.success(f"**{result}**")
-        
-            
-    '''pred = model.predict(df_input)[0]
-    st.markdown(f"""
-        <div class="sticky">
-            <h2>📈 Prediction: {pred}</h2>
-        </div>
-    """, unsafe_allow_html=True)'''
+if st.button("Predict"):
+    prediction = model.predict(input_df)[0]
+    result = (
+        "Customer is likely to purchase the product"
+        if prediction == 1 else
+        "Customer is unlikely to purchase the product"
+    )
+
+    st.subheader("Prediction Result")
+    st.success(f"**{result}**")
+
+
+'''pred = model.predict(df_input)[0]
+st.markdown(f"""
+    <div class="sticky">
+        <h2>📈 Prediction: {pred}</h2>
+    </div>
+""", unsafe_allow_html=True)'''
