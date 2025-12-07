@@ -94,12 +94,6 @@ Designation_vals = ['Manager', 'Executive', 'Senior Manager', 'AVP', 'VP']
 
 CityType = [ "Tier 1", "Tier 2", "Tier 3"]
 
-CityTier_vals = [1, 2, 3]
-
-PreferredPropertyStar_vals = [3.0, 4.0, 5.0]
-
-NumberOfTrips_vals = [1, 2, 7, 5, 6, 3, 4, 19, 21, 8, 20, 22]
-
 PitchSatisfactionScore_vals = [1, 2, 3, 4, 5]
 
 
@@ -219,3 +213,7 @@ if st.button("🔍 Predict", use_container_width=True):
              else "Customer is **unlikely** to purchase the product."
 
     st.success(result)
+
+# Show the etails of data frame prepared from user input
+st.subheader("📦 Input Data Summary")
+st.json(input_df)
