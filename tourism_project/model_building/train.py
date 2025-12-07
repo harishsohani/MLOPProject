@@ -320,9 +320,7 @@ with mlflow.start_run(run_name="random_search_xgb_pipeline"):
 
     print ("\n Uploaded best model (best_tourism_model.joblib) to Hugging Face Model Repo\n")
 
-    # display best pipeline
-    # Configure scikit-learn to display estimators as diagrams
-    sklearn.set_config(display='diagram')
-
     # Display the best pipeline directly
-    best_pipeline
+    
+    print ('\nBest Pipeline Obtained is as follows')
+    pprint (best_pipeline)
