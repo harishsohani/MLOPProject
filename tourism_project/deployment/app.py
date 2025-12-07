@@ -21,13 +21,6 @@ st.set_page_config(
     page_title="Tourism Prediction App",
     layout="wide"
 )
-# Streamlit UI for Machine Failure Prediction
-#st.title("Tourism App - Input form for Predection")
-st.write("""
-This application predicts the likelihood of whether a customer would take the product based on following set of parameters.
-Please provide the following details.
-""")
-
 
 
 # ---------------------------------------------------------
@@ -145,7 +138,8 @@ Passport = 1 if Passport_display == "Yes" else 0
 # ---------------------------------------------------------
 # TRAVEL INFORMATION
 # ---------------------------------------------------------
-with st.expander("✈️ 2. Travel Information", expanded=False):
+# Keep section expanded by default - so it is visible when we open 
+with st.expander("✈️ 2. Travel Information", expanded=True):
 
     col1, col2, col3, col4, col5 = st.columns(5)
 
@@ -165,7 +159,8 @@ with st.expander("✈️ 2. Travel Information", expanded=False):
 # ---------------------------------------------------------
 # INTERACTION INFORMATION
 # ---------------------------------------------------------
-with st.expander("🗣️ 3. Interaction Details", expanded=False):
+# Keep section expanded by default - so it is visible when we open 
+with st.expander("🗣️ 3. Interaction Details", expanded=True):
 
     col1, col2, col3, col4, col5 = st.columns(5)
 

@@ -98,3 +98,5 @@ for file_path in files:
         repo_id="harishsohani/MLOP-Project-Tourism",
         repo_type="dataset",
     )
+
+print ("Uploaded Train and test data (csv) files to Hugging Face Space (Dataset) Successfully")
