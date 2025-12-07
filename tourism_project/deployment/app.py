@@ -30,7 +30,7 @@ st.markdown("""
 <style>
 /* Reduce page padding */
 .block-container {
-    padding-top: 0.25rem; /* smaller padding on top */
+    padding-top: 1rem; /* smaller padding on top */
     padding-bottom: 1rem;
     padding-left: 2rem;
     padding-right: 2rem;
