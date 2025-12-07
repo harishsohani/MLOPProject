@@ -30,7 +30,7 @@ st.markdown("""
 <style>
 /* Reduce page padding */
 .block-container {
-    padding-top: 1rem; /* smaller padding on top */
+    padding-top: 4rem; /* smaller padding on top */
     padding-bottom: 1rem;
     padding-left: 2rem;
     padding-right: 2rem;
@@ -92,7 +92,7 @@ MaritalStatus_vals = ['Single', 'Divorced', 'Married', 'Unmarried']
 
 Designation_vals = ['Manager', 'Executive', 'Senior Manager', 'AVP', 'VP']
 
-CityType = [ "Tier 1", "Tier 2", "Tier3"]
+CityType = [ "Tier 1", "Tier 2", "Tier 3"]
 
 CityTier_vals = [1, 2, 3]
 
