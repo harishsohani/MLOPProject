@@ -209,8 +209,8 @@ st.markdown("---")
 if st.button("🔍 Predict", use_container_width=True):
 
     prediction = model.predict(input_df)[0]
-    result = "Customer is **likely** to purchase the product." if prediction == 1 \
-             else "Customer is **unlikely** to purchase the product."
+    result = "Based on the information provided, the customer is **likely** to purchase the product." if prediction == 1 \
+             else "Based on the information provided, the customer is **unlikely** to purchase the product."
 
     st.success(result)
 
