@@ -141,7 +141,7 @@ with st.expander("✈️ 2. Travel Information", expanded=False):
 
     with col2:
         NumberOfPersonVisiting = st.number_input("Total Persons Visiting", 1, 10, 2)
-        PreferredPropertyStar = st.selectbox("Preferred Property Star", [1, 2, 3, 4, 5])
+        PreferredPropertyStar = st.selectbox("Preferred Property Star", [3, 4, 5])
 
 
 
