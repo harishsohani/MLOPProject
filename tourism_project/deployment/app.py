@@ -53,6 +53,14 @@ div[data-testid="stVerticalBlock"] {
     font-size: 1rem;
     padding: 0.4rem 0.5rem;
 }
+
+/* section header */
+.section-header {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    color: #333333 !important;
+    margin-top: 20px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
