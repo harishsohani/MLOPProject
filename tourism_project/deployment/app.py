@@ -11,11 +11,74 @@ from huggingface_hub import hf_hub_download
 # library to load model
 import joblib
 
+
+
+
+# ---------------------------------------------------------
+# PAGE CONFIG
+# ---------------------------------------------------------
+st.set_page_config(
+    page_title="Tourism Prediction App",
+    layout="wide"
+)
+# Streamlit UI for Machine Failure Prediction
+#st.title("Tourism App - Input form for Predection")
+st.write("""
+This application predicts the likelihood of whether a customer would take the product based on following set of parameters.
+Please provide the following details.
+""")
+
+
+
+# ---------------------------------------------------------
+# LIGHT CSS OPTIMIZATION
+# ---------------------------------------------------------
+st.markdown("""
+<style>
+/* Reduce page padding */
+.block-container {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+/* Reduce vertical gaps between widgets */
+div[data-testid="stVerticalBlock"] {
+    row-gap: 0.5rem;
+}
+
+/* Tighter expander headers */
+.streamlit-expanderHeader {
+    font-size: 1rem;
+    padding: 0.4rem 0.5rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # Download and load the model
-model_path = hf_hub_download(repo_id="harishsohani/MLOP-Project-Tourism", filename="best_tourism_model.joblib")
+model_path = hf_hub_download(
+    repo_id="harishsohani/MLOP-Project-Tourism", 
+    filename="best_tourism_model.joblib"
+    )
 model = joblib.load(model_path)
 
+
+# ---------------------------------------------------------
+# TITLE
+# ---------------------------------------------------------
+st.title("🏖️ Tourism Purchase Prediction App")
+st.write("Fill in the details below and click **Predict** to see if the customer is likely to purchase the product.")
+
+
+
+# ---------------------------------------------------------
+# DROPDOWN VALUES
+#
 # Define predefines set values for each input applicable
+# These are used to show pick list
+# ---------------------------------------------------------
 TypeofContact_vals = ['Self Enquiry', 'Company Invited']
 
 Occupation_vals = ['Salaried', 'Free Lancer', 'Small Business', 'Large Business']
@@ -38,89 +101,29 @@ NumberOfTrips_vals = [1, 2, 7, 5, 6, 3, 4, 19, 21, 8, 20, 22]
 
 PitchSatisfactionScore_vals = [1, 2, 3, 4, 5]
 
-# ---------------------------------------------------------
-# UI OPTIMIZATION (CSS + Layout Tweaks)
-# ---------------------------------------------------------
-st.markdown("""
-    <style>
-        /* Reduce padding at top/bottom */
-        .main {
-            padding-top: 1rem;
-        }
-
-        /* Card-style containers */
-        .card {
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            margin-bottom: 20px;
-        }
-
-        /* Smaller headers */
-        h1 { font-size: 32px !important; }
-        h2 { font-size: 26px !important; }
-        h3 { font-size: 20px !important; }
-
-        /* Input element spacing */
-        .stSelectbox, .stNumberInput, .stTextInput {
-            margin-bottom: -10px;
-        }
-
-        /* Prediction box sticky to top-right */
-        .sticky {
-            position: fixed;
-            top: 80px;
-            right: 20px;
-            width: 300px;
-            z-index: 999;
-            background-color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-# Streamlit UI for Machine Failure Prediction
-st.title("Tourism App - Input form for Predection")
-st.write("""
-This application predicts the likelihood of whether a customer would take the product based on following set of parameters.
-Please provide the following details.
-""")
 
 
 # ---------------------------------------------------------
 # PERSONAL INFORMATION
 # ---------------------------------------------------------
 with st.expander("👤 1. Personal and Professional Information", expanded=True):
-    #st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
+
     with col1:
         Age = st.number_input("Age", 18, 90, 30)
         Gender = st.selectbox("Gender", Gender_vals)
         MaritalStatus = st.selectbox("Marital Status", MaritalStatus_vals)
+        MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 50000)
 
     with col2:
         CityTier_label = st.selectbox("City Tier", CityType)
-        #OwnCar = st.selectbox("Owns a Car?", [0, 1])
-        #Passport = st.selectbox("Has Passport?", [0, 1])
         OwnCar_display = st.radio("Own Car?", ["Yes", "No"])
         Passport_display = st.radio("Has Passport?", ["Yes", "No"])
-
-    with col3:
         Occupation = st.selectbox("Occupation", Occupation_vals)
         Designation = st.selectbox("Designation", Designation_vals)
-        MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 50000)
 
-    st.markdown('</div>', unsafe_allow_html=True)
-
-#convert City Tier to numeric
 CityTier = {"Tier 1": 1, "Tier 2": 2, "Tier 3": 3}[CityTier_label]
-
-# Convert Yes/No → 1/0
 OwnCar = 1 if OwnCar_display == "Yes" else 0
 Passport = 1 if Passport_display == "Yes" else 0
 
@@ -128,44 +131,37 @@ Passport = 1 if Passport_display == "Yes" else 0
 # ---------------------------------------------------------
 # TRAVEL INFORMATION
 # ---------------------------------------------------------
-with st.expander("✈️ 2. Travel Information"):
-    #st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+with st.expander("✈️ 2. Travel Information", expanded=False):
 
     col1, col2 = st.columns(2)
+
     with col1:
         NumberOfTrips = st.number_input("Average Trips per Year", 0, 100, 2)
-        NumberOfChildrenVisiting = st.number_input("Children (Below 5 years)", 0, 10, 0)
+        NumberOfChildrenVisiting = st.number_input("Children (Below 5 yrs)", 0, 10, 0)
 
     with col2:
         NumberOfPersonVisiting = st.number_input("Total Persons Visiting", 1, 10, 2)
         PreferredPropertyStar = st.selectbox("Preferred Property Star", [1, 2, 3, 4, 5])
 
-    st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ---------------------------------------------------------
 # INTERACTION INFORMATION
 # ---------------------------------------------------------
-with st.expander("🗣️ 3. Interaction Details"):
-    #st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+with st.expander("🗣️ 3. Interaction Details", expanded=False):
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
 
     with col1:
-        TypeofContact = st.selectbox("Type of Contact", ["Company Invited", "Self Inquiry"])
+        TypeofContact = st.selectbox("Type of Contact", TypeofContact_vals)
         ProductPitched = st.selectbox("Product Pitched", ProductPitched_vals)
-
 
     with col2:
         DurationOfPitch = st.number_input("Pitch Duration (minutes)", 0, 200, 10)
         NumberOfFollowups = st.number_input("Number of Follow-ups", 0, 50, 1)
-
-    with col3:
         PitchSatisfactionScore = st.selectbox("Pitch Satisfaction Score", [1, 2, 3, 4, 5])
 
-    st.markdown('</div>', unsafe_allow_html=True)
+
 
 # --------------------------
 # Prepare input data frame
@@ -195,23 +191,13 @@ input_df = pd.DataFrame([input_data])
 
 
 # ---------------------------------------------------------
-# Predict Button
+# PREDICT BUTTON
 # ---------------------------------------------------------
-if st.button("Predict"):
+st.markdown("---")
+if st.button("🔍 Predict", use_container_width=True):
+
     prediction = model.predict(input_df)[0]
-    result = (
-        "Customer is likely to purchase the product"
-        if prediction == 1 else
-        "Customer is unlikely to purchase the product"
-    )
+    result = "Customer is **likely** to purchase the product." if prediction == 1 \
+             else "Customer is **unlikely** to purchase the product."
 
-    st.subheader("Prediction Result")
-    st.success(f"**{result}**")
-
-
-'''pred = model.predict(df_input)[0]
-st.markdown(f"""
-    <div class="sticky">
-        <h2>📈 Prediction: {pred}</h2>
-    </div>
-""", unsafe_allow_html=True)'''
+    st.success(result)

@@ -314,3 +314,10 @@ with mlflow.start_run(run_name="random_search_xgb_pipeline"):
         repo_id=repo_id,
         repo_type=repo_type,
     )
+
+    # display best pipeline
+    # Configure scikit-learn to display estimators as diagrams
+    sklearn.set_config(display='diagram')
+
+    # Display the best pipeline directly
+    best_pipeline    
