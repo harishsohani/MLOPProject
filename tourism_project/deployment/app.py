@@ -135,7 +135,7 @@ with st.expander("👤 1. Personal and Professional Information", expanded=True)
         Designation = st.selectbox("Designation", Designation_vals)
 
     with col5:
-        MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 100000)
+        MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 1000000, 100000)
 
 CityTier = {"Tier 1": 1, "Tier 2": 2, "Tier 3": 3}[CityTier_label]
 OwnCar = 1 if OwnCar_display == "Yes" else 0
@@ -147,7 +147,7 @@ Passport = 1 if Passport_display == "Yes" else 0
 # ---------------------------------------------------------
 with st.expander("✈️ 2. Travel Information", expanded=False):
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
         NumberOfTrips = st.number_input("Average Trips per Year", 0, 50, 2)
@@ -182,7 +182,7 @@ with st.expander("🗣️ 3. Interaction Details", expanded=False):
         NumberOfFollowups = st.number_input("Number of Follow-ups", 0, 50, 1)
 
     with col5:
-        PitchSatisfactionScore = st.selectbox("Pitch Satisfaction Score", [1, 2, 3, 4, 5])
+        PitchSatisfactionScore = st.selectbox("Pitch Satisfaction Score", [5, 4, 3, 2, 1])
 
 
 
