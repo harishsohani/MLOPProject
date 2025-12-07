@@ -108,20 +108,22 @@ PitchSatisfactionScore_vals = [1, 2, 3, 4, 5]
 # ---------------------------------------------------------
 with st.expander("👤 1. Personal and Professional Information", expanded=True):
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         Age = st.number_input("Age", 18, 90, 30)
         Gender = st.selectbox("Gender", Gender_vals)
         MaritalStatus = st.selectbox("Marital Status", MaritalStatus_vals)
-        MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 50000)
 
     with col2:
         CityTier_label = st.selectbox("City Tier", CityType)
         OwnCar_display = st.radio("Own Car?", ["Yes", "No"])
         Passport_display = st.radio("Has Passport?", ["Yes", "No"])
+
+    with col3:
         Occupation = st.selectbox("Occupation", Occupation_vals)
         Designation = st.selectbox("Designation", Designation_vals)
+        MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 50000)
 
 CityTier = {"Tier 1": 1, "Tier 2": 2, "Tier 3": 3}[CityTier_label]
 OwnCar = 1 if OwnCar_display == "Yes" else 0
@@ -133,16 +135,17 @@ Passport = 1 if Passport_display == "Yes" else 0
 # ---------------------------------------------------------
 with st.expander("✈️ 2. Travel Information", expanded=False):
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         NumberOfTrips = st.number_input("Average Trips per Year", 0, 100, 2)
-        NumberOfChildrenVisiting = st.number_input("Children (Below 5 yrs)", 0, 10, 0)
 
     with col2:
         NumberOfPersonVisiting = st.number_input("Total Persons Visiting", 1, 10, 2)
-        PreferredPropertyStar = st.selectbox("Preferred Property Star", [3, 4, 5])
 
+    with col3:
+        NumberOfChildrenVisiting = st.number_input("Children (Below 5 yrs)", 0, 10, 0)
+        PreferredPropertyStar = st.selectbox("Preferred Property Star", [3, 4, 5])
 
 
 # ---------------------------------------------------------
@@ -150,7 +153,7 @@ with st.expander("✈️ 2. Travel Information", expanded=False):
 # ---------------------------------------------------------
 with st.expander("🗣️ 3. Interaction Details", expanded=False):
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         TypeofContact = st.selectbox("Type of Contact", TypeofContact_vals)
@@ -159,6 +162,8 @@ with st.expander("🗣️ 3. Interaction Details", expanded=False):
     with col2:
         DurationOfPitch = st.number_input("Pitch Duration (minutes)", 0, 200, 10)
         NumberOfFollowups = st.number_input("Number of Follow-ups", 0, 50, 1)
+
+    with col3:
         PitchSatisfactionScore = st.selectbox("Pitch Satisfaction Score", [1, 2, 3, 4, 5])
 
 
