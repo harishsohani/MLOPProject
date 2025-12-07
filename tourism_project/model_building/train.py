@@ -278,7 +278,7 @@ with mlflow.start_run(run_name="random_search_xgb_pipeline"):
     # log best parameters
     mlflow.log_params(best_params)
 
-    # log best metric 
+    # log best metric
     mlflow.log_metric("best_score", random_search.best_score_)
 
     # print best parameters
@@ -348,6 +348,6 @@ with mlflow.start_run(run_name="random_search_xgb_pipeline"):
     print ("\n Uploaded best model (best_tourism_model.joblib) to Hugging Face Model Repo\n")
 
     # Display the best pipeline directly
-    
+
     print ('\nBest Pipeline Obtained is as follows')
     pprint (best_pipeline)
