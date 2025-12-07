@@ -325,4 +325,4 @@ with mlflow.start_run(run_name="random_search_xgb_pipeline"):
     sklearn.set_config(display='diagram')
 
     # Display the best pipeline directly
-    best_pipeline    
+    best_pipeline

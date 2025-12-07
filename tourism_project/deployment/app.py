@@ -60,7 +60,7 @@ div[data-testid="stVerticalBlock"] {
 
 # Download and load the model
 model_path = hf_hub_download(
-    repo_id="harishsohani/MLOP-Project-Tourism", 
+    repo_id="harishsohani/MLOP-Project-Tourism",
     filename="best_tourism_model.joblib"
     )
 model = joblib.load(model_path)
@@ -132,7 +132,7 @@ Passport = 1 if Passport_display == "Yes" else 0
 # ---------------------------------------------------------
 # TRAVEL INFORMATION
 # ---------------------------------------------------------
-# Keep section expanded by default - so it is visible when we open 
+# Keep section expanded by default - so it is visible when we open
 with st.expander("✈️ 2. Travel Information", expanded=True):
 
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -153,7 +153,7 @@ with st.expander("✈️ 2. Travel Information", expanded=True):
 # ---------------------------------------------------------
 # INTERACTION INFORMATION
 # ---------------------------------------------------------
-# Keep section expanded by default - so it is visible when we open 
+# Keep section expanded by default - so it is visible when we open
 with st.expander("🗣️ 3. Interaction Details", expanded=True):
 
     col1, col2, col3, col4, col5 = st.columns(5)
@@ -216,4 +216,5 @@ if st.button("🔍 Predict", use_container_width=True):
 
 # Show the etails of data frame prepared from user input
 st.subheader("📦 Input Data Summary")
-st.json(input_df)
+st.dataframe(input_df)
+#st.json(input_df)
