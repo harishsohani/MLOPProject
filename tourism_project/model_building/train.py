@@ -249,10 +249,37 @@ with mlflow.start_run(run_name="random_search_xgb_pipeline"):
 
     random_search.fit(X_train, y_train)
 
+
+    # ---------------------------------------------------
+    # Log ALL tried parameter combinations
+    # ---------------------------------------------------
+    cv_results = random_search.cv_results_
+    total_trials = len(cv_results["params"])
+
+    for i in range(total_trials):
+        with mlflow.start_run(
+            run_name=f"trial_{i+1}", nested=True
+        ):
+
+            # Log the parameters tested
+            mlflow.log_params(cv_results["params"][i])
+
+            # Log CV score for that trial
+            mlflow.log_metric("mean_test_score", cv_results["mean_test_score"][i])
+            mlflow.log_metric("std_test_score", cv_results["std_test_score"][i])
+
+
+
+    # ---------------------------------------------------
+    # Log the BEST parameters
+    # ---------------------------------------------------
     best_params = random_search.best_params_
 
     # log best parameters
     mlflow.log_params(best_params)
+
+    # log best metric 
+    mlflow.log_metric("best_score", random_search.best_score_)
 
     # print best parameters
     print("\nBest parameters found during training:")
