@@ -37,7 +37,7 @@ st.markdown("""
 <style>
 /* Reduce page padding */
 .block-container {
-    padding-top: 1rem;
+    padding-top: 0.25rem; /* smaller padding on top */
     padding-bottom: 1rem;
     padding-left: 2rem;
     padding-right: 2rem;
@@ -116,7 +116,7 @@ PitchSatisfactionScore_vals = [1, 2, 3, 4, 5]
 # ---------------------------------------------------------
 with st.expander("👤 1. Personal and Professional Information", expanded=True):
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
         Age = st.number_input("Age", 18, 120, 30)
@@ -125,7 +125,7 @@ with st.expander("👤 1. Personal and Professional Information", expanded=True)
     with col2:
         MaritalStatus = st.selectbox("Marital Status", MaritalStatus_vals)
         CityTier_label = st.selectbox("City Tier", CityType)
-        
+
     with col3:
         OwnCar_display = st.radio("Own Car?", ["Yes", "No"])
         Passport_display = st.radio("Has Passport?", ["Yes", "No"])
@@ -133,6 +133,8 @@ with st.expander("👤 1. Personal and Professional Information", expanded=True)
     with col4:
         Occupation = st.selectbox("Occupation", Occupation_vals)
         Designation = st.selectbox("Designation", Designation_vals)
+
+    with col5:
         MonthlyIncome = st.number_input("Monthly Income (₹)", 0, 500000, 100000)
 
 CityTier = {"Tier 1": 1, "Tier 2": 2, "Tier 3": 3}[CityTier_label]
@@ -165,19 +167,21 @@ with st.expander("✈️ 2. Travel Information", expanded=False):
 # ---------------------------------------------------------
 with st.expander("🗣️ 3. Interaction Details", expanded=False):
 
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
 
     with col1:
         TypeofContact = st.selectbox("Type of Contact", TypeofContact_vals)
-        ProductPitched = st.selectbox("Product Pitched", ProductPitched_vals)
 
     with col2:
-        DurationOfPitch = st.number_input("Pitch Duration (minutes)", 0, 200, 10)
+        ProductPitched = st.selectbox("Product Pitched", ProductPitched_vals)
 
     with col3:
-        NumberOfFollowups = st.number_input("Number of Follow-ups", 0, 50, 1)
+        DurationOfPitch = st.number_input("Pitch Duration (minutes)", 0, 200, 10)
 
     with col4:
+        NumberOfFollowups = st.number_input("Number of Follow-ups", 0, 50, 1)
+
+    with col5:
         PitchSatisfactionScore = st.selectbox("Pitch Satisfaction Score", [1, 2, 3, 4, 5])
 
 

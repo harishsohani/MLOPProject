@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from pprint import pprint
 
+# import sklearn library
 import sklearn
 
 # libraries for converting text data in to numerical representation
@@ -159,6 +160,8 @@ y_test = y_test.squeeze()
 neg = (y_train == 0).sum()
 pos = (y_train == 1).sum()
 scale_pos_weight = neg / pos
+
+# show class weight
 print("Class weight:", scale_pos_weight)
 
 
@@ -198,9 +201,9 @@ preprocessor = ColumnTransformer(
 # 6. Build model and pipeline
 # ----------------------------
 xgb_model  = xgb.XGBClassifier(
-    #use_label_encoder=False,
-    eval_metric="logloss",   # recommended for newer xgboost versions
-    scale_pos_weight=scale_pos_weight, # This will now be a single float
+    #use_label_encoder=False,           # this parameter is depricated in latest version
+    eval_metric="logloss",              # recommended for newer xgboost versions
+    scale_pos_weight=scale_pos_weight,  # This will now be a single float
     random_state=RANDOM_STATE,
     tree_method="hist",      # faster for larger data; keep XGBoost deterministic-ish
 )
@@ -314,6 +317,8 @@ with mlflow.start_run(run_name="random_search_xgb_pipeline"):
         repo_id=repo_id,
         repo_type=repo_type,
     )
+
+    print ("\n Uploaded best model (best_tourism_model.joblib) to Hugging Face Model Repo\n")
 
     # display best pipeline
     # Configure scikit-learn to display estimators as diagrams

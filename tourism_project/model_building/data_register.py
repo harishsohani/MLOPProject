@@ -25,6 +25,7 @@ except RepositoryNotFoundError:
     print(f"Space '{repo_id}' created.")
 
 # upload files from data folder
+# here we use api to upload data file(s)
 api.upload_folder(
     folder_path="tourism_project/data",
     repo_id=repo_id,

@@ -24,7 +24,7 @@ RANDOM_STATE = 42
 TEST_SIZE = 0.20   # final test split
 
 
-# read data from csv as data frame
+# read data from csv as data frame (Note: data is read from hugging face space)
 df = pd.read_csv(DATASET_PATH)
 print("Dataset loaded successfully.")
 
@@ -39,6 +39,11 @@ df.drop(columns=['Unnamed: 0', 'CustomerID'], inplace=True)
 
 # Data cleaning
 
+
+# ----------------------
+# Column : Gender
+# ----------------------
+
 # As per analysis only Gender column needs to be addressed for data cleaning.
 # Values in Other columns look fine
 # replace value 'Fe male' with 'Female' in Gender column. Gender column will have only two values 'Male' and 'Female'
@@ -46,6 +51,16 @@ df.drop(columns=['Unnamed: 0', 'CustomerID'], inplace=True)
 # update column 'Gender' and replace 'Fe male' as 'Female'
 df['Gender'] = df['Gender'].replace ('Fe Male', 'Female')
 
+
+
+# ----------------------
+# Column : MaritalStatus
+# ----------------------
+
+# Also looked at column --> MaritalStatus
+# This has 4 values, where Single can be generic to 'Divorced', 'Unmarried'
+# However this value is retained as one may not want to disclose exact status.
+# Having this value will make user comfirmatble with right chouce
 
 # No other processing is required.
 # Preprocessor wil be used duirng model building based on nature of input variables
@@ -61,6 +76,7 @@ y = df[target_col]
 # Perform train-test split.
 # Note 80% of data is used for training and 20% for testing
 # Perform train-test split
+# Since the data set is imbalanced in class - using stratify
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=TEST_SIZE, stratify=y, random_state=RANDOM_STATE
 )
@@ -74,6 +90,7 @@ y_test.to_csv("ytest.csv",index=False)
 # define files list for uploading
 files = ["Xtrain.csv","Xtest.csv","ytrain.csv","ytest.csv"]
 
+# copy train and test data (csv files)
 for file_path in files:
     api.upload_file(
         path_or_fileobj=file_path,
